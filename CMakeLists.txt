@@ -6,9 +6,8 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wpedantic")
 
 enable_testing()
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/simple_dimacs)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/tokenizer)
-
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/simple_dimacs)
 
 add_executable(graph-coloring src/main.c)
 target_link_libraries(graph-coloring PRIVATE simple_dimacs)

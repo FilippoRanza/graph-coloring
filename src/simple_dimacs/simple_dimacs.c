@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <tokenizer.h>
 #include "simple_dimacs.h"
 
+#define BUFF_SIZE 4096
 
 
 void free_graph(graph* g) {
@@ -54,14 +56,14 @@ result read_line(FILE* fp, char* buff, size_t buff_size) {
 }
 
 
-typedef enum{
-    comment,
-    problem, 
-    nodes,
-    edge
-} linetype;
-
 graph* read_graph(FILE* fp) {
+    char* buff = malloc(BUFF_SIZE);
+    if(buff == NULL)
+        return NULL;
+
+    
+
+
     return NULL;
 }
 
