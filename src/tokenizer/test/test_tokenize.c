@@ -17,7 +17,7 @@ int main() {
     TokenizerResult result = tokenize(tokens, str);
     assert(result == Ok);
 
-    fprintf(stderr, "Actual token count %d\n", tokens_count(tokens));
+    fprintf(stderr, "Actual token count %ld\n", tokens_count(tokens));
     assert(tokens_count(tokens) == 4);
     char** actual = tokens_buff(tokens);
     char* expected[] = {

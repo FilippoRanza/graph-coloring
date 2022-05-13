@@ -62,7 +62,7 @@ typedef enum{
 } linetype;
 
 graph* read_graph(FILE* fp) {
-
+    return NULL;
 }
 
 

@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 char* make_modifiable_string(char* str) {
 
     int len = strlen(str);
