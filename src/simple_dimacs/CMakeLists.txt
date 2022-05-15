@@ -21,21 +21,11 @@ macro(new_test file_name)
     )
     target_include_directories(${file_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
     target_link_libraries(${file_name} PUBLIC simple_dimacs)
-    add_test(${file_name} ${file_name})
+    add_test(${file_name} ${file_name} ${ARGN})
 endmacro(new_test)
 
 new_test(test_parse_comment)
 new_test(test_parse_edge)
 new_test(test_parse_node)
 new_test(test_parse_problem)
-
-
-#add_executable(
-#    test-parse-edge
-#    test/test_parse_edge.c
-#)
-#
-#
-#target_include_directories(test-parse-edge PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-#target_link_libraries(test-parse-edge PUBLIC simple_dimacs)
-#add_test(test-parse-edge test-parse-edge)
+new_test(test_parse_file ${CMAKE_CURRENT_SOURCE_DIR}/test/graph.txt)
