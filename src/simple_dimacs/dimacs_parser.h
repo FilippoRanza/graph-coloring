@@ -1,6 +1,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifndef __DIMACS_PARSER_H
+#define __DIMACS_PARSER_H
+
+
 typedef enum {
     Comment,
     Problem,
@@ -42,3 +46,5 @@ ProblemData* get_problem_data(Parser*);
 NodeData* get_node_data(Parser*);
 EdgeData* get_edge_data(Parser*);
 EntryType get_entry_type(Parser*);
+
+#endif
