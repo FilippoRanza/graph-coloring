@@ -53,7 +53,8 @@ void free_scip_instance_if_set(Instance* instance) {
     
     
     // free constraints
-    free_constr_if_set(instance->scip_env, instance->one_color);
+
+    free_constr_vector_if_set(instance->scip_env, instance->one_color, instance->node_count);
 
     size_t not_same_color_constrs = instance->color_count * instance->graph->arcs_count;
     free_constr_vector_if_set(instance->scip_env, instance->not_same_color, not_same_color_constrs);

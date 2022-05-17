@@ -4,7 +4,7 @@ typedef struct {
     SCIP* scip_env;
     SCIP_VAR** color_enable;
     SCIP_VAR*** color_selection;
-    SCIP_CONS* one_color;
+    SCIP_CONS** one_color;
     SCIP_CONS** not_same_color;
     SCIP_CONS** enable_color;
     Graph* graph;

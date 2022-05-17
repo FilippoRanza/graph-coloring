@@ -18,13 +18,22 @@ target_link_libraries(milp PRIVATE simple_dimacs)
 
 enable_testing()
 
+macro(new_milp_test src_file graph_file)
 add_executable(
-    load-instance-test
-    test/test_problem_load.c
+    ${src_file}
+    test/${src_file}.c
 )
-target_link_libraries(load-instance-test PUBLIC simple_dimacs)
-target_link_libraries(load-instance-test PUBLIC milp)
+target_link_libraries(${src_file} PUBLIC simple_dimacs)
+target_link_libraries(${src_file} PUBLIC milp)
+add_test(${src_file} ${src_file} ${CMAKE_CURRENT_SOURCE_DIR}/test/${graph_file})
 
-add_test(load-instance-test load-instance-test ${CMAKE_CURRENT_SOURCE_DIR}/test/graph.txt)
+endmacro(new_milp_test)
+
+new_milp_test(test_problem_load graph.txt)
+new_milp_test(test_problem_solution graph.txt)
+
+
+
+
 
 

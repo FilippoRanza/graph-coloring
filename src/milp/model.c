@@ -27,7 +27,7 @@ SCIP_RETCODE init_scip_env(SCIP** scip) {
     SCIP_CALL( SCIPcreate(scip) );
     SCIP_CALL( SCIPincludeDefaultPlugins(*scip) );
     SCIP_CALL( SCIPcreateProbBasic(*scip, "Graph-Coloring"));
-    SCIP_CALL( SCIPsetObjsense(*scip, SCIP_OBJSENSE_MAXIMIZE) );
+    SCIP_CALL( SCIPsetObjsense(*scip, SCIP_OBJSENSE_MINIMIZE) );
     return SCIP_OKAY;
 }
 
@@ -62,25 +62,21 @@ SCIP_RETCODE add_bin_matrix(SCIP* scip, SCIP_VAR**** vars, size_t columns, size_
     return SCIP_OKAY;
 }
 
-SCIP_RETCODE add_one_color_per_node(SCIP* scip, SCIP_CONS** cons, SCIP_VAR*** vars, size_t colors, size_t nodes) {
-    SCIP_CALL(SCIPcreateConsBasicOrbitope(scip, cons, "", vars, SCIP_ORBITOPETYPE_PARTITIONING, nodes, colors, FALSE, FALSE, TRUE, FALSE)); 
+SCIP_RETCODE add_one_color_per_node(SCIP* scip, SCIP_CONS*** cons, SCIP_VAR*** vars, size_t colors, size_t nodes) {
+    SCIP_CONS** cons_buff = malloc(sizeof(SCIP_CONS*) * nodes);
+    if(cons_buff == NULL)
+        return SCIP_NOMEMORY;
+    SCIP_CONS** tmp_ptr = cons_buff;
+    for(size_t i = 0; i < nodes; i++) {
+        SCIP_CONS* curr = NULL;
+        SCIP_CALL(SCIPcreateConsBasicSetpart(scip, &curr, "", colors, *vars++));
+        SCIP_CALL(SCIPaddCons(scip, curr));
+        *tmp_ptr++ = curr;
+    }
+    *cons = cons_buff;
     return SCIP_OKAY;
 }
 
-// SCIP_RETCODE add_not_same_color(SCIP* scip, SCIP_VAR*** vars, SCIP_CONS*** cons, Arc* arc, size_t colors) {
-//     SCIP_CONS** cons_buff = malloc(sizeof(SCIP_CONS**) * colors);
-//     if(cons_buff == NULL)
-//         return SCIP_NOMEMORY;
-
-//     SCIP_CONS** tmp_ptr = cons_buff;
-//     for(size_t i = 0; i < colors; i++) {
-//         SCIP_CONS* curr = NULL;
-
-//     }
-
-//     *cons = cons_buff;
-//     return SCIP_OKAY;
-// }
 
 SCIP_RETCODE add_all_not_same_color(SCIP* scip, SCIP_VAR*** vars, SCIP_CONS*** cons, Arc* arcs, size_t arc_count, size_t colors) {
     SCIP_CONS** cons_buff= malloc(sizeof(SCIP_CONS*) * (arc_count * colors));
@@ -99,6 +95,7 @@ SCIP_RETCODE add_all_not_same_color(SCIP* scip, SCIP_VAR*** vars, SCIP_CONS*** c
             SCIP_CALL(SCIPcreateConsBasicKnapsack(scip, &curr, "", 0, NULL, NULL, 1));
             SCIP_CALL( SCIPaddCoefKnapsack(scip, curr, *src_col++, 1) );
             SCIP_CALL( SCIPaddCoefKnapsack(scip, curr, *dst_col++, 1) );
+            SCIP_CALL(SCIPaddCons(scip, curr));
             *tmp_ptr++ = curr;
         }
     }
@@ -119,9 +116,10 @@ SCIP_RETCODE add_enable_color(SCIP* scip, SCIP_VAR*** set_color, SCIP_VAR** enab
         SCIP_VAR** tmp_enable_color = enable_color;
         for(size_t c = 0; c < colors; c++) {
             SCIP_CONS* curr = NULL;
-            SCIP_CALL( SCIPcreateConsBasicKnapsack(scip, &curr, "", 0, NULL, NULL, 0));
-            SCIP_CALL( SCIPaddCoefKnapsack(scip, curr, *node_column++, 1));
-            SCIP_CALL( SCIPaddCoefKnapsack(scip, curr, *tmp_enable_color++, -1));
+            SCIP_CALL( SCIPcreateConsBasicLinear(scip, &curr, "", 0, NULL, NULL, -1.0, 0.0));
+            SCIP_CALL( SCIPaddCoefLinear(scip, curr, *node_column++, 1));
+            SCIP_CALL( SCIPaddCoefLinear(scip, curr, *tmp_enable_color++, -1));
+            SCIP_CALL(SCIPaddCons(scip, curr));
             *tmp_ptr++ = curr;
         }
     }
@@ -140,10 +138,10 @@ SCIP_RETCODE build_model(Instance* instance) {
     SCIP_CALL ( add_bin_matrix(instance->scip_env, &instance->color_selection, instance->node_count, instance->color_count, 0.0));
 
     // Constraints
+    
     SCIP_CALL(add_one_color_per_node(instance->scip_env, &instance->one_color, instance->color_selection, instance->color_count, instance->node_count));
     SCIP_CALL(add_all_not_same_color(instance->scip_env, instance->color_selection, &instance->not_same_color, instance->graph->arcs, instance->graph->arcs_count, instance->color_count));
     SCIP_CALL(add_enable_color(instance->scip_env, instance->color_selection, instance->color_enable, &instance->enable_color, instance->node_count, instance->color_count));
-
 
 
     return SCIP_OKAY;
