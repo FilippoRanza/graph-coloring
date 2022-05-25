@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include <milp/milp.h>
+#include <base_milp/milp.h>
 #include <simple_dimacs/simple_dimacs.h>
 
 #include <scip/scip.h>

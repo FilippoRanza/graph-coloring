@@ -1,7 +1,7 @@
 
 #include <assert.h>
 
-#include "milp.h"
+#include "bnp_milp.h"
 
 
 #define PRICER_NAME            "graph-coloring"

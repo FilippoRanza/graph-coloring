@@ -8,8 +8,6 @@ add_library(
     new_instance.h
     model.c
     model.h
-    pricer_graph_coloring.c
-    pricer_graph_coloring.h
 )
 
 target_include_directories(milp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

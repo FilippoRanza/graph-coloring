@@ -9,7 +9,8 @@ enable_testing()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/tokenizer)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/simple_dimacs)
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/milp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/base_milp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/bnp_milp)
 
 
 add_executable(graph-coloring src/main.c)
