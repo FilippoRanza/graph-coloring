@@ -12,5 +12,6 @@
 #include "free_instance.h"
 #include "model.h"
 #include "new_instance.h"
+#include "pricer_graph_coloring.h"
 
 #endif
