@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.00)
 
 project(graph-coloring VERSION 0.1.0) 
-
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wpedantic -g -O0")
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_C_FLAGS_DEBUG_INIT "-Wall -Wpedantic -g -O0")
+set(CMAKE_C_FLAGS_RELEASE_INIT "-Wall -Wpedantic -g0 -O2")
 
 enable_testing()
 
