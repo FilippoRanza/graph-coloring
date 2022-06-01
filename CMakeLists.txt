@@ -17,4 +17,7 @@ add_executable(graph-coloring src/main.c)
 target_link_libraries(graph-coloring PRIVATE simple_dimacs)
 target_link_libraries(graph-coloring PRIVATE milp)
 
+add_executable(bnp-graph-coloring src/bnp_main.c)
+target_link_libraries(bnp-graph-coloring PRIVATE simple_dimacs)
+target_link_libraries(bnp-graph-coloring PRIVATE bnp_milp)
 

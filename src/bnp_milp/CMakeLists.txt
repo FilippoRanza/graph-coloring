@@ -2,6 +2,14 @@ add_library(
     bnp_milp
     pricer_graph_coloring.c
     pricer_graph_coloring.h
+    bnp_master.c
+    bnp_master.h
+    bnp_coloring_struct.h
+    bnp_coloring_struct.c
+    master_variable_helper.c
+    master_variable_helper.h
+    create_basic_patterns.c
+    create_basic_patterns.h
 )
 
 target_include_directories(bnp_milp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)

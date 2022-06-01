@@ -3,13 +3,11 @@
 #define __SCIP_PRICER_GRAPH_COLORING_H__
 
 
-#include "scip/scip.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-SCIP_EXPORT SCIP_RETCODE SCIPincludePricerXyz(SCIP* scip);
+SCIP_EXPORT SCIP_RETCODE SCIPincludePricerGraphColoring(SCIP* scip);
 
 #ifdef __cplusplus
 }
