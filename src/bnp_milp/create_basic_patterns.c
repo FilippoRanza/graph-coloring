@@ -3,8 +3,9 @@
 SCIP_RETCODE create_basic_pattern(BnPGraphColoring* bgp, int node_id, int node_count) {
     int* buff;
     SCIP_CALL(SCIPallocBlockMemoryArray(bgp->scip, &buff, node_count));
+    int* tmp = buff;
     for(int i = 0; i < node_count; i++) {
-        *buff = 0;
+        *tmp++ = 0;
     }
     buff[node_id] = 1;
     add_new_variable(bgp, buff, node_count);

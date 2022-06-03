@@ -34,8 +34,7 @@ SCIP_RETCODE init_constrs(SCIP* scip, SCIP_CONS*** constr, int node_count) {
     *constr = cons_buff;
     return SCIP_OKAY;
 }
-#include <stdio.h>
-
+ 
 SCIP_RETCODE create_bnp_master(BnPGraphColoring* bgc) {
     SCIP** scip = &bgc->scip;
     SCIP_CONS*** constr = &bgc->master_cons;

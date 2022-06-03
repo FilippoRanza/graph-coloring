@@ -53,12 +53,11 @@ SCIP_RETCODE create_new_variable(SCIP* scip, SCIP_VAR** var, int* coeff, int cou
 
 SCIP_RETCODE insert_new_priced_variable(SCIP* scip, SCIP_VAR* var, SCIP_CONS** conss, int* coeff, int count) {
     while(count--) {
+        SCIP_CONS* cons = *conss++;
         if(*coeff++) {
-            SCIP_CALL( SCIPaddCoefSetppc(scip, *conss++, var) );    
+            SCIP_CALL( SCIPaddCoefSetppc(scip, cons, var) );    
         }
     }
-
-
     return SCIP_OKAY;
 }
 

@@ -26,12 +26,10 @@ add_executable(
 )
 target_link_libraries(${src_file} PUBLIC simple_dimacs)
 target_link_libraries(${src_file} PUBLIC bnp_milp)
-add_test(${src_file} ${src_file} ${CMAKE_CURRENT_SOURCE_DIR}/test/${graph_file})
+target_link_libraries(${src_file} PUBLIC scip)
+add_test(${src_file} ${src_file} ${PROJECT_SOURCE_DIR}/graphs/${graph_file})
 
 endmacro(new_bnp_milp_test)
 
 
-
-
-
-
+new_bnp_milp_test(test_only_master graph.txt)
