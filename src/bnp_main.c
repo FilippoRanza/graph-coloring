@@ -31,6 +31,7 @@ int main(int argc, char** argv) {
 
     double sol_value = SCIPgetPrimalbound(bgc->scip);
     printf("Color count: %f\n", sol_value);
+    
 
     SCIP_CALL( free_instance(bgc) );
 

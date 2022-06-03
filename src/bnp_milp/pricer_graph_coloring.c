@@ -17,25 +17,13 @@ struct SCIP_PricerData {
 };
 
 
-#define pricerCopyGraphColoring NULL
-
-#define pricerFreeGraphColoring NULL
-
-#define pricerInitGraphColoring NULL
-
-#define pricerExitGraphColoring NULL
-
-#define pricerInitsolGraphColoring NULL
-
-
-#define pricerExitsolGraphColoring NULL
-
 SCIP_RETCODE initialize_pricing(SCIP** pricing) {
 
    SCIP_CALL( SCIPcreate(pricing) );
    SCIP_CALL( SCIPincludeDefaultPlugins(*pricing) );
    SCIP_CALL( SCIPcreateProbBasic(*pricing, "pricing") );
    SCIP_CALL( SCIPsetObjsense(*pricing, SCIP_OBJSENSE_MAXIMIZE) );
+   SCIP_CALL( SCIPsetIntParam(*pricing, "display/verblevel", 0) );
 
    return SCIP_OKAY;
 }
@@ -102,14 +90,7 @@ SCIP_RETCODE create_pricing_problem(SCIP* master, SCIP_PRICER* pricer, SCIP* pri
    return SCIP_OKAY;
 }
 
-SCIP_RETCODE generate_columns(SCIP* master, SCIP* pricing, SCIP_PRICER* pricer, SCIP_VAR** vars) {
-   SCIP_PRICERDATA* pricer_data = SCIPpricerGetData(pricer);
-   int count = pricer_data->count;
-   SCIP_CONS** conss = pricer_data->master_cons;
-
-   SCIP_SOL* sol = SCIPgetBestSol(pricing);
-   if(SCIPgetSolOrigObj(pricing, sol) <= 1.0)
-      return SCIP_OKAY;
+SCIP_RETCODE generate_column(SCIP* master, SCIP* pricing, SCIP_SOL* sol,  SCIP_VAR** vars, SCIP_CONS** conss, int count) {
 
    int* coeff;
    SCIP_CALL(SCIPallocBlockMemoryArray(master, &coeff, count));
@@ -122,7 +103,23 @@ SCIP_RETCODE generate_columns(SCIP* master, SCIP* pricing, SCIP_PRICER* pricer, 
    }
 
    SCIP_CALL(add_new_variable_direct(master, conss, coeff, count));
+  
+   return SCIP_OKAY;
+}
 
+SCIP_RETCODE generate_columns(SCIP* master, SCIP* pricing, SCIP_PRICER* pricer, SCIP_VAR** vars) {
+   SCIP_PRICERDATA* pricer_data = SCIPpricerGetData(pricer);
+   int count = pricer_data->count;
+   SCIP_CONS** conss = pricer_data->master_cons;
+
+   SCIP_SOL** sols = SCIPgetSols(pricing);
+   int sol_count = SCIPgetNSols(pricing);
+   for(int i = 0; i < sol_count; i++) {
+      SCIP_SOL* sol = *sols++;
+      if(SCIPgetSolOrigObj(pricing, sol) <= 1.0)
+         break;
+      SCIP_CALL(generate_column(master, pricing, sol, vars, conss, count));
+   }
 
    return SCIP_OKAY;
 }
@@ -149,7 +146,6 @@ SCIP_RETCODE reduced_cost_pricing(SCIP* master, SCIP_PRICER* pricer, SCIP_Real* 
    return SCIP_OKAY;
 }
 
-#define pricerFarkasGraphColoring NULL
 
 SCIP_RETCODE init_pricing_graph_coloring(SCIP* scip, SCIP_PRICER* pricer) {
 
