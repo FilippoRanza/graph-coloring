@@ -21,7 +21,16 @@ int main(int argc, char** argv) {
 
     BnPGraphColoring* bgc;
     SCIP_CALL( init_instance(&bgc, graph) );
+    SCIP_CALL( enable_pricing(bgc) );
 
+    SCIP_CALL(SCIPsolve(bgc->scip));
+
+
+    SCIP_STATUS status = SCIPgetStatus(bgc->scip);
+    assert(status == SCIP_STATUS_OPTIMAL);
+
+    double sol_value = SCIPgetPrimalbound(bgc->scip);
+    printf("Color count: %f\n", sol_value);
 
     SCIP_CALL( free_instance(bgc) );
 
