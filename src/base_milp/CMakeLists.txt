@@ -24,7 +24,7 @@ add_executable(
 )
 target_link_libraries(${src_file} PUBLIC simple_dimacs)
 target_link_libraries(${src_file} PUBLIC milp)
-add_test(${src_file} ${src_file} ${CMAKE_CURRENT_SOURCE_DIR}/test/${graph_file})
+add_test(${src_file} ${src_file} ${PROJECT_SOURCE_DIR}/graphs/${graph_file})
 
 endmacro(new_milp_test)
 
