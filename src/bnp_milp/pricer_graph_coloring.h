@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-SCIP_EXPORT SCIP_RETCODE SCIPincludePricerGraphColoring(SCIP* scip);
+SCIP_EXPORT SCIP_RETCODE include_pricer_graph_coloring(BnPGraphColoring*);
+
 
 #ifdef __cplusplus
 }

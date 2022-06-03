@@ -26,7 +26,6 @@ static SCIP_DECL_VARDELTRANS(vardata_delete_function_pointer) {
     SCIP_CALL( free_var_data(scip, vardata) );
     return SCIP_OKAY;
 }
-#include <stdio.h>
 
 SCIP_RETCODE add_variable(SCIP* scip, SCIP_VAR* var) {
     SCIP_STATUS status = SCIPgetStatus(scip);
@@ -60,12 +59,16 @@ SCIP_RETCODE insert_new_priced_variable(SCIP* scip, SCIP_VAR* var, SCIP_CONS** c
     }
     return SCIP_OKAY;
 }
-
-SCIP_RETCODE add_new_variable(BnPGraphColoring* bgp, int* coeffs, int count) {
+SCIP_RETCODE add_new_variable_direct(SCIP* scip, SCIP_CONS** conss, int* coeffs, int count) {
     SCIP_VAR* var;
-    SCIP_CALL(create_new_variable(bgp->scip, &var, coeffs, count));
-    SCIP_CALL(insert_new_priced_variable(bgp->scip, var, bgp->master_cons, coeffs, count));
-    SCIP_CALL( SCIPreleaseVar(bgp->scip, &var) );
+    SCIP_CALL(create_new_variable(scip, &var, coeffs, count));
+    SCIP_CALL(insert_new_priced_variable(scip, var, conss, coeffs, count));
+    SCIP_CALL( SCIPreleaseVar(scip, &var) );
+}
+
+
+SCIP_RETCODE add_new_variable(BnPGraphColoring* bgc, int* coeffs, int count) {
+    SCIP_CALL( add_new_variable_direct(bgc->scip, bgc->master_cons, coeffs, count) );
     return SCIP_OKAY;
 }
 

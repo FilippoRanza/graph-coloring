@@ -11,6 +11,7 @@ typedef struct {
     Graph* graph;
     SCIP* scip;
     SCIP_CONS** master_cons;
+    SCIP_PRICER* pricer;
 } BnPGraphColoring;
 
 SCIP_RETCODE init_instance(BnPGraphColoring**, Graph*);

@@ -33,3 +33,5 @@ endmacro(new_bnp_milp_test)
 
 
 new_bnp_milp_test(test_only_master graph.txt)
+new_bnp_milp_test(test_solver graph.txt)
+new_bnp_milp_test(test_initialize_pricing graph.txt)

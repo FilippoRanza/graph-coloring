@@ -6,6 +6,7 @@
 
 
 SCIP_RETCODE add_new_variable(BnPGraphColoring*, int*, int);
+SCIP_RETCODE add_new_variable_direct(SCIP*, SCIP_CONS**, int*, int);
 
 #endif
 

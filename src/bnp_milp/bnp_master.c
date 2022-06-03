@@ -5,7 +5,6 @@
 SCIP_RETCODE init_scip(SCIP** scip) {
     SCIP_CALL( SCIPcreate(scip) );
     SCIP_CALL( SCIPincludeDefaultPlugins(*scip) );
-    SCIP_CALL( SCIPincludePricerGraphColoring(*scip) );
     SCIP_CALL( SCIPsetIntParam(*scip,"presolving/maxrestarts",0) );
     SCIP_CALL( SCIPsetSeparating(*scip, SCIP_PARAMSETTING_OFF, TRUE) );
     SCIP_CALL( SCIPcreateProbBasic(*scip, "Graph-Coloring"));
@@ -15,8 +14,10 @@ SCIP_RETCODE init_scip(SCIP** scip) {
 
 SCIP_RETCODE init_constr(SCIP* scip, SCIP_CONS** constr) {
 
-    SCIP_CALL(SCIPcreateConsSetpart(scip, constr, "", 0, NULL, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE));
+    SCIP_CALL(SCIPcreateConsBasicSetpart(scip, constr, "", 0, NULL));
+    SCIP_CALL(SCIPsetConsModifiable(scip, *constr, TRUE));
     SCIP_CALL(SCIPaddCons(scip, *constr));
+
     return SCIP_OKAY;
 }
 
@@ -43,6 +44,11 @@ SCIP_RETCODE create_bnp_master(BnPGraphColoring* bgc) {
     SCIP_CALL( init_constrs(*scip, constr, node_count));  
     SCIP_CALL(create_basic_patterns(bgc));
 
+    return SCIP_OKAY;
+}
+
+SCIP_RETCODE enable_pricing(BnPGraphColoring* bgc) {
+    SCIP_CALL( include_pricer_graph_coloring(bgc) );
     return SCIP_OKAY;
 }
 
