@@ -7,7 +7,7 @@
 #define PRICER_NAME            "graph-coloring"
 #define PRICER_DESC            "Find coloring patterns"
 #define PRICER_PRIORITY        0
-#define PRICER_DELAY           TRUE     
+#define PRICER_DELAY           TRUE
 
 
 struct SCIP_PricerData {
@@ -24,6 +24,8 @@ SCIP_RETCODE initialize_pricing(SCIP** pricing) {
    SCIP_CALL( SCIPcreateProbBasic(*pricing, "pricing") );
    SCIP_CALL( SCIPsetObjsense(*pricing, SCIP_OBJSENSE_MAXIMIZE) );
    SCIP_CALL( SCIPsetIntParam(*pricing, "display/verblevel", 0) );
+   SCIP_CALL( SCIPsetBoolParam(*pricing, "misc/catchctrlc", FALSE) );
+   SCIP_CALL( SCIPsetRealParam(*pricing, "limits/time", 25) );
 
    return SCIP_OKAY;
 }
@@ -91,23 +93,21 @@ SCIP_RETCODE create_pricing_problem(SCIP* master, SCIP_PRICER* pricer, SCIP* pri
 }
 
 SCIP_RETCODE generate_column(SCIP* master, SCIP* pricing, SCIP_SOL* sol,  SCIP_VAR** vars, SCIP_CONS** conss, int count) {
+         
 
    int* coeff;
    SCIP_CALL(SCIPallocBlockMemoryArray(master, &coeff, count));
    int* tmp = coeff;
    for(int i = 0; i < count; i++) {
-      if(SCIPgetSolVal(pricing, sol, *vars++)) {
-         *tmp = 1;
-      }
-      tmp++;
+      *tmp++ = SCIPgetSolVal(pricing, sol, *vars++);
    }
 
-   SCIP_CALL(add_new_variable_direct(master, conss, coeff, count));
+   SCIP_CALL(add_new_variable_direct(master, conss, coeff, count, 1));
   
    return SCIP_OKAY;
 }
 
-SCIP_RETCODE generate_columns(SCIP* master, SCIP* pricing, SCIP_PRICER* pricer, SCIP_VAR** vars) {
+SCIP_RETCODE generate_columns(SCIP* master, SCIP* pricing, SCIP_PRICER* pricer, SCIP_VAR** vars, int* status) {
    SCIP_PRICERDATA* pricer_data = SCIPpricerGetData(pricer);
    int count = pricer_data->count;
    SCIP_CONS** conss = pricer_data->master_cons;
@@ -116,18 +116,19 @@ SCIP_RETCODE generate_columns(SCIP* master, SCIP* pricing, SCIP_PRICER* pricer, 
    int sol_count = SCIPgetNSols(pricing);
    for(int i = 0; i < sol_count; i++) {
       SCIP_SOL* sol = *sols++;
-      if(SCIPgetSolOrigObj(pricing, sol) <= 1.0)
+      double sol_val = SCIPgetSolOrigObj(pricing, sol);
+      if(SCIPisFeasGT(pricing, sol_val, 1.0)) {
+         SCIP_CALL(generate_column(master, pricing, sol, vars, conss, count));
+         *status = 1;
+      } else {
          break;
-      SCIP_CALL(generate_column(master, pricing, sol, vars, conss, count));
+      }
    }
 
    return SCIP_OKAY;
 }
-
 SCIP_RETCODE reduced_cost_pricing(SCIP* master, SCIP_PRICER* pricer, SCIP_Real* lowerbound, SCIP_Bool* stopearly, SCIP_RESULT* result) { 
    *result = SCIP_DIDNOTRUN;
-
-
    SCIP* pricing;
    SCIP_CALL( initialize_pricing(&pricing) );
 
@@ -136,10 +137,13 @@ SCIP_RETCODE reduced_cost_pricing(SCIP* master, SCIP_PRICER* pricer, SCIP_Real* 
 
    SCIP_CALL( SCIPsolve(pricing) );
 
-   SCIP_CALL( generate_columns(master, pricing, pricer, pricer_vars) );
+   int success = 0;
+   SCIP_CALL( generate_columns(master, pricing, pricer, pricer_vars, &success) );
 
 
-   *result = SCIP_SUCCESS;
+   if(success || SCIPgetStatus(pricing) == SCIP_STATUS_OPTIMAL) {
+      *result = SCIP_SUCCESS;
+   }
 
    SCIPfree(&pricing);
    SCIPfreeBufferArray(master, &pricer_vars);
@@ -148,7 +152,7 @@ SCIP_RETCODE reduced_cost_pricing(SCIP* master, SCIP_PRICER* pricer, SCIP_Real* 
 
 
 SCIP_RETCODE init_pricing_graph_coloring(SCIP* scip, SCIP_PRICER* pricer) {
-
+   fprintf(stderr, "CALL Init\n");
    SCIP_PRICERDATA* pricer_data = SCIPpricerGetData(pricer);
    SCIP_CONS** conss = pricer_data->master_cons;
    int count = pricer_data->count;
