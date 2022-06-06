@@ -28,7 +28,6 @@ static SCIP_DECL_VARDELTRANS(vardata_delete_function_pointer) {
 }
 
 SCIP_RETCODE add_priced_variable(SCIP* scip, SCIP_VAR* var) {
-    SCIP_CALL( SCIPchgVarUbLazy(scip, var, NEW_VAR_MAX) );
     SCIP_CALL(SCIPaddPricedVar(scip, var, NEW_VAR_OBJ));
     SCIP_CALL( SCIPvarSetInitial(var, 1.0) );
     return SCIP_OKAY;
